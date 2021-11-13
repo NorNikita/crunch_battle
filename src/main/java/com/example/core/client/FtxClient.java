@@ -90,6 +90,11 @@ public class FtxClient {
        return BaseEncoding.base16().lowerCase().encode(some);
     }
 
+    /**
+     * представление параметров запроса, нужно для кодировки
+     * @param params
+     * @return
+     */
     private String asString(Map<String, String> params) {
         StringBuilder sb = new StringBuilder();
         sb.append("?");
@@ -101,7 +106,6 @@ public class FtxClient {
                 sb.append("&");
             }
         }
-
         return sb.toString();
     }
 }

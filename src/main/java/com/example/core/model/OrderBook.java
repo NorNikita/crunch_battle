@@ -24,7 +24,7 @@ public class OrderBook {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    static class Result {
+    public static class Result {
         //sellers
         @JsonProperty("asks")
         private List<List<Double>> asks;

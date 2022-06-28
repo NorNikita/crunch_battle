@@ -13,11 +13,13 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderBook {
+    @JsonProperty("market")
+    private String market;
 
-    @JsonProperty("success")
-    private Boolean success;
+    @JsonProperty("grouping")
+    private Double grouping;
 
-    @JsonProperty("result")
+    @JsonProperty("data")
     private Result result;
 
     @Getter

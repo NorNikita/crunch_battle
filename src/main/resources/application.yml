@@ -1,3 +1,6 @@
 api:
   key: "J2llwwE6vTkjAq8RPB-3HGZHU6zcEVtjRINCREYT"
   secret: "_x5Nn2zdLFMKW2TneEOfJAF2hwQsELC6j8Dbu2XN"
+url:
+  ws: "wss://ftx.com/ws/"
+  http: "https://ftx.com/api"

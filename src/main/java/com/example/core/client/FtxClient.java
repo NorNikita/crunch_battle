@@ -1,23 +1,24 @@
 package com.example.core.client;
 
 import com.example.core.model.OrderBook;
-import com.google.common.io.BaseEncoding;
+import lombok.SneakyThrows;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriBuilder;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.NoSuchAlgorithmException;
+import javax.websocket.ContainerProvider;
+import javax.websocket.Session;
+import javax.websocket.WebSocketContainer;
+import java.net.URI;
 import java.time.Clock;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import static com.example.core.utils.CryptoUtil.sign;
 
 @Service
 public class FtxClient {
@@ -26,6 +27,15 @@ public class FtxClient {
     private String apiKey;
     @Value("${api.secret}")
     private String secretKey;
+    @Value("${url.ws}")
+    private String wsBaseUrl;
+    @Value("${url.http}")
+    private String httpBaseUrl;
+
+    @Autowired
+    private FtxWebSocketClientSession ftxWebSocketClientSession;
+
+    ExecutorService pool = Executors.newFixedThreadPool(1);
 
     private final WebClient webClient = WebClient.builder()
             .baseUrl("https://ftx.com/api")
@@ -36,13 +46,22 @@ public class FtxClient {
                     .build()
             ).build();
 
+    @SneakyThrows
+    public void subscribeOnTopic() {
+        WebSocketContainer webSocketContainer = ContainerProvider.getWebSocketContainer();
 
+        Session session = webSocketContainer.connectToServer(ftxWebSocketClientSession, URI.create(wsBaseUrl));
 
-    public OrderBook executeGetMethod(String relativePath, Map<String, String> params) {
-        return executeRequest(relativePath, RequestMethod.GET.name(), params);
+        String groupedOrderBook =  "{\"op\": \"subscribe\", \"channel\": \"orderbookGrouped\"," +
+                " \"market\": \"BTC-PERP\", \"grouping\": \"500\"}";
+
+        pool.submit(() -> {
+            System.out.println("subscribed");
+            session.getAsyncRemote().sendText(groupedOrderBook);
+        });
     }
 
-    public OrderBook executeRequest(String relativePath, String methodName, Map<String, String> params) {
+    public OrderBook executeHttpRequest(String relativePath, String methodName, Map<String, String> params) {
         return webClient
                 .get()
                 .uri(builder -> {
@@ -64,48 +83,5 @@ public class FtxClient {
                 .exchange()
                 .flatMap(response -> response.bodyToMono(OrderBook.class))
                 .block();
-    }
-
-    private static String sign(String payload, byte[] secret) {
-        return encode(
-                hmacSha256(secret).doFinal(payload.getBytes(UTF_8))
-        );
-    }
-
-    private static Mac hmacSha256(byte[] secret) {
-        try {
-            String algorithmName = SecretKeyAlgorithm.HMAC_SHA256.getName();
-            Mac mac = Mac.getInstance(algorithmName);
-            Key spec = new SecretKeySpec(secret, algorithmName);
-            mac.init(spec);
-            return mac;
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException(e);
-        } catch (InvalidKeyException e) {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    private static String encode(byte[] some) {
-       return BaseEncoding.base16().lowerCase().encode(some);
-    }
-
-    /**
-     * представление параметров запроса, нужно для кодировки
-     * @param params
-     * @return
-     */
-    private String asString(Map<String, String> params) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("?");
-        for(Map.Entry<String, String> entry : params.entrySet()) {
-            sb.append(entry.getKey());
-            sb.append("=");
-            sb.append(entry.getValue());
-            if (params.size() > 1) {
-                sb.append("&");
-            }
-        }
-        return sb.toString();
     }
 }

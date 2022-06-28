@@ -1,6 +1,6 @@
 package com.example;
 
-import com.example.core.service.AskBidCsv;
+import com.example.core.client.FtxClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -10,11 +10,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CrunchApplication implements CommandLineRunner {
 
     @Autowired
-    private AskBidCsv askBidCsv;
+    private FtxClient ftxClient;
 
     @Override
     public void run(String... args) throws Exception {
-        askBidCsv.subscribeAndGetInfo();
+        ftxClient.subscribeOnTopic();
     }
 
     public static void main(String[] args) {

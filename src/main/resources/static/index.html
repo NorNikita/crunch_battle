@@ -11,39 +11,41 @@
         client.connect({}, frame => {
             client.subscribe("/topic/ask", payload => {
                 let asks = JSON.parse(payload.body);
-                document.getElementById('ask1').innerText = asks[0];
-                document.getElementById('ask2').innerText = asks[1];
-                document.getElementById('ask3').innerText = asks[2];
-                document.getElementById('ask4').innerText = asks[3];
-                document.getElementById('ask5').innerText = asks[4];
-                document.getElementById('ask6').innerText = asks[5];
-                document.getElementById('ask7').innerText = asks[6];
-                document.getElementById('ask8').innerText = asks[7];
-                document.getElementById('ask9').innerText = asks[8];
-                document.getElementById('ask10').innerText = asks[9];
+                document.getElementById('ask1').innerText = asks[0][0] + "  " + asks[0][1];
+                document.getElementById('ask2').innerText = asks[1][0] + "  " + asks[1][1];
+                document.getElementById('ask3').innerText = asks[2][0] + "  " + asks[2][1];
+                document.getElementById('ask4').innerText = asks[3][0] + "  " + asks[3][1];
+                document.getElementById('ask5').innerText = asks[4][0] + "  " + asks[4][1];
+                document.getElementById('ask6').innerText = asks[5][0] + "  " + asks[5][1];
+                document.getElementById('ask7').innerText = asks[6][0] + "  " + asks[6][1];
+                document.getElementById('ask8').innerText = asks[7][0] + "  " + asks[7][1];
+                document.getElementById('ask9').innerText = asks[8][0] + "  " + asks[8][1];
+                document.getElementById('ask10').innerText = asks[9][0] + "  " + asks[9][1];
             });
             client.subscribe("/topic/bid", payload => {
                 let bids = JSON.parse(payload.body);
-                document.getElementById('bid1').innerText = bids[0];
-                document.getElementById('bid2').innerText = bids[1];
-                document.getElementById('bid3').innerText = bids[2];
-                document.getElementById('bid4').innerText = bids[3];
-                document.getElementById('bid5').innerText = bids[4];
-                document.getElementById('bid6').innerText = bids[5];
-                document.getElementById('bid7').innerText = bids[6];
-                document.getElementById('bid8').innerText = bids[7];
-                document.getElementById('bid9').innerText = bids[8];
-                document.getElementById('bid10').innerText = bids[9];
+                document.getElementById('bid1').innerText = bids[0][0] + "  " + bids[0][1];
+                document.getElementById('bid2').innerText = bids[1][0] + "  " + bids[1][1];
+                document.getElementById('bid3').innerText = bids[2][0] + "  " + bids[2][1];
+                document.getElementById('bid4').innerText = bids[3][0] + "  " + bids[3][1];
+                document.getElementById('bid5').innerText = bids[4][0] + "  " + bids[4][1];
+                document.getElementById('bid6').innerText = bids[5][0] + "  " + bids[5][1];
+                document.getElementById('bid7').innerText = bids[6][0] + "  " + bids[6][1];
+                document.getElementById('bid8').innerText = bids[7][0] + "  " + bids[7][1];
+                document.getElementById('bid9').innerText = bids[8][0] + "  " + bids[8][1];
+                document.getElementById('bid10').innerText = bids[9][0] + "  " + bids[9][1];
             });
         })
     </script>
 </head>
 <body>
     <div id="container" style="overflow:hidden;width:800px">
+        <div style="margin-left: 140px"> BTC-PERP grouped order book </div>
         <div id="cup" style="white-space:nowrap">
             <div id="ask" style="width:300px;display:inline-block;border:1px solid black">
-                Ask
-                <ul id="top-10-ask" style="color: red">
+                Top-10 ask
+                <ul id="top-10-ask" style="color: red; list-style-type: none;">
+                    <li style="color: black"> price     amount </li>
                     <li id="ask1"></li>
                     <li id="ask2"></li>
                     <li id="ask3"></li>
@@ -57,8 +59,9 @@
                 </ul>
             </div>
             <div id="bid" style="width:300px;display:inline-block;border:1px solid black">
-                Bid
-                <ul id="top-10-bid" style="color: green">
+                Top-10 bid
+                <ul id="top-10-bid" style="color: green;  list-style-type: none;">
+                    <li style="color: black"> price   amount </li>
                     <li id="bid1"></li>
                     <li id="bid2"></li>
                     <li id="bid3"></li>
